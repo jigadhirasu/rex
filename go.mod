@@ -1,4 +1,4 @@
-module rex
+module github.com/jigadhirasu/rex
 
 go 1.21.3
 
