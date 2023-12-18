@@ -1,7 +1,7 @@
 package rex
 
 // 取得最後一個元素
-func Last[A any](iterable Iterable[A]) func(ctx Context) Iterable[A] {
+func Last[A any](iterable Iterable[A]) Reader[A] {
 	return func(ctx Context) Iterable[A] {
 
 		ch := make(chan Item[A])

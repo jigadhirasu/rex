@@ -1,7 +1,7 @@
 package rex
 
-func Scan[A, B any](initial B, f Transfer2[B, A, B]) func(iterable Iterable[A]) func(ctx Context) Iterable[B] {
-	return func(iterable Iterable[A]) func(ctx Context) Iterable[B] {
+func Scan[A, B any](initial B, f Transfer2[B, A, B]) func(iterable Iterable[A]) Reader[B] {
+	return func(iterable Iterable[A]) Reader[B] {
 		return func(ctx Context) Iterable[B] {
 			ch := make(chan Item[B])
 

@@ -1,8 +1,8 @@
 package rex
 
 // 來源如果為空，則傳回預設值
-func Default[A any](a A) func(iterable Iterable[A]) func(ctx Context) Iterable[A] {
-	return func(iterable Iterable[A]) func(ctx Context) Iterable[A] {
+func Default[A any](a A) func(iterable Iterable[A]) Reader[A] {
+	return func(iterable Iterable[A]) Reader[A] {
 		return func(ctx Context) Iterable[A] {
 			ch := make(chan Item[A])
 

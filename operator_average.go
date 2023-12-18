@@ -6,7 +6,7 @@ type Number interface {
 		~float32 | ~float64
 }
 
-func Average[A Number](iterable Iterable[A]) func(ctx Context) Iterable[A] {
+func Average[A Number](iterable Iterable[A]) Reader[A] {
 	return func(ctx Context) Iterable[A] {
 		ch := make(chan Item[A])
 

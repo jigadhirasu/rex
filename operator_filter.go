@@ -1,8 +1,8 @@
 package rex
 
 // 過濾掉不符合條件的元素
-func Filter[A any](f Predicate[A]) func(iterable Iterable[A]) func(ctx Context) Iterable[A] {
-	return func(iterable Iterable[A]) func(ctx Context) Iterable[A] {
+func Filter[A any](f Predicate[A]) func(iterable Iterable[A]) Reader[A] {
+	return func(iterable Iterable[A]) Reader[A] {
 		return func(ctx Context) Iterable[A] {
 			ch := make(chan Item[A])
 

@@ -1,8 +1,8 @@
 package rex
 
 // 有Side Effect的Step
-func Map[A, B any](f Func1[A, B]) func(iterable Iterable[A]) func(ctx Context) Iterable[B] {
-	return func(iterable Iterable[A]) func(ctx Context) Iterable[B] {
+func Map[A, B any](f Func1[A, B]) func(iterable Iterable[A]) Reader[B] {
+	return func(iterable Iterable[A]) Reader[B] {
 		return func(ctx Context) Iterable[B] {
 			ch := make(chan Item[B])
 
@@ -34,8 +34,8 @@ func Map[A, B any](f Func1[A, B]) func(iterable Iterable[A]) func(ctx Context) I
 	}
 }
 
-func Map1[A any](f Func1[A, A]) func(iterable Iterable[A]) func(ctx Context) Iterable[A] {
-	return func(iterable Iterable[A]) func(ctx Context) Iterable[A] {
+func Map1[A any](f Func1[A, A]) func(iterable Iterable[A]) Reader[A] {
+	return func(iterable Iterable[A]) Reader[A] {
 		return Map[A, A](f)(iterable)
 	}
 }
