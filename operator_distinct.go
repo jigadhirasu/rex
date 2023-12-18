@@ -12,6 +12,7 @@ func Distinct[A any, B cmp.Ordered](f Transfer1[A, B]) func(iterable Iterable[A]
 
 			go func() {
 				defer close(ch)
+				defer Catcher[A](ch)
 
 				offset := map[B]bool{}
 

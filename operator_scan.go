@@ -7,6 +7,7 @@ func Scan[A, B any](initial B, f Transfer2[B, A, B]) func(iterable Iterable[A]) 
 
 			go func() {
 				defer close(ch)
+				defer Catcher[B](ch)
 
 				source := iterable()
 

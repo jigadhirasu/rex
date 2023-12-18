@@ -8,6 +8,7 @@ func Filter[A any](f Predicate[A]) func(iterable Iterable[A]) Reader[A] {
 
 			go func() {
 				defer close(ch)
+				defer Catcher[A](ch)
 
 				source := iterable()
 				for i := 0; i < 4096; i++ {

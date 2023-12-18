@@ -8,6 +8,7 @@ func Last[A any](iterable Iterable[A]) Reader[A] {
 
 		go func() {
 			defer close(ch)
+			defer Catcher[A](ch)
 
 			source := iterable()
 

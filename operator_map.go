@@ -8,6 +8,7 @@ func Map[A, B any](f Func1[A, B]) func(iterable Iterable[A]) Reader[B] {
 
 			go func() {
 				defer close(ch)
+				defer Catcher[B](ch)
 
 				source := iterable()
 				for {
