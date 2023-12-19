@@ -13,7 +13,7 @@ func Last[A any](iterable Iterable[A]) Reader[A] {
 			source := iterable()
 
 			var last Item[A]
-			for i := 0; i < 4096; i++ {
+			for {
 				item, ok := <-source
 				if !ok {
 					break

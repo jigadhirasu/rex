@@ -17,7 +17,7 @@ func Distinct[A any, B cmp.Ordered](f Transfer1[A, B]) func(iterable Iterable[A]
 				offset := map[B]bool{}
 
 				source := iterable()
-				for i := 0; i < 4096; i++ {
+				for {
 					item, ok := <-source
 					if !ok {
 						return

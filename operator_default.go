@@ -13,7 +13,7 @@ func Default[A any](a A) func(iterable Iterable[A]) Reader[A] {
 				source := iterable()
 
 				count := 0
-				for i := 0; i < 4096; i++ {
+				for {
 					item, ok := <-source
 					if !ok {
 						break

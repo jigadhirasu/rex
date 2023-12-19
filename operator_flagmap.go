@@ -21,7 +21,7 @@ func FlatMap[A, B any](f FlatFunc1[A, B]) func(iterable Iterable[A]) Reader[B] {
 					close(ch)
 				}()
 
-				for i := 0; i < 4096; i++ {
+				for {
 					item, ok := <-source
 					if !ok {
 						return
