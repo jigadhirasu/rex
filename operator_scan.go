@@ -1,38 +1,41 @@
-package rex
+// package rex
 
-func Scan[A, B any](initial B, f Transfer2[B, A, B]) func(iterable Iterable[A]) Reader[B] {
-	return func(iterable Iterable[A]) Reader[B] {
-		return func(ctx Context) Iterable[B] {
-			ch := make(chan Item[B])
+// func Scan[A, B any](f Transfer2[B, A, B]) func(iterable Iterable[A]) Reader[B] {
+// 	return func(iterable Iterable[A]) Reader[B] {
+// 		return func(ctx Context) Iterable[B] {
+// 			ch := make(chan Item[B])
 
-			go func() {
-				defer close(ch)
-				defer Catcher[B](ch)
+// 			go func() {
+// 				defer close(ch)
+// 				defer Catcher[B](ch)
 
-				source := iterable()
+// 				source := iterable()
 
-				for {
-					item, ok := <-source
-					if !ok {
-						break
-					}
+// 				var initial B
 
-					a, err := item()
-					if err != nil {
-						ch <- ItemError[B](err)
-						break
-					}
+// 				for {
+// 					item, ok := <-source
+// 					if !ok {
+// 						break
+// 					}
 
-					initial = f(initial, a)
-				}
+// 					a, err := item()
+// 					if err != nil {
+// 						ch <- ItemError[B](err)
+// 						break
+// 					}
 
-				if !sendItem(ctx, ch, ItemOf(initial)) {
-					ch <- ItemError[B](ctx.Err())
-					return
-				}
-			}()
+// 					initial = f(initial, a)
 
-			return FromChanItem[B](ch)
-		}
-	}
-}
+// 					if !sendItem(ctx, ch, ItemOf(initial)) {
+// 						ch <- ItemError[B](ctx.Err())
+// 						return
+// 					}
+
+// 				}
+// 			}()
+
+// 			return FromChanItem[B](ch)
+// 		}
+// 	}
+// }
