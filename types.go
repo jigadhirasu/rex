@@ -11,3 +11,10 @@ type FlatFunc1[A, B any] func(ctx Context, a A) Iterable[B]
 type FlatFunc2[A, B, C any] func(ctx Context, a A, b B) Iterable[C]
 
 type Predicate[A any] func(a A) bool
+
+type Subject[A any] func() (chan<- Item[A], Iterable[A])
+
+func (subject Subject[A]) Close() {
+	next, _ := subject()
+	close(next)
+}

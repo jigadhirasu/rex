@@ -79,6 +79,7 @@ func (iter Iterable[A]) ToSlice() ([]A, error) {
 	source := iter()
 
 	for {
+
 		item, ok := <-source
 		if !ok {
 			break

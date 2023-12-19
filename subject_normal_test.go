@@ -82,6 +82,9 @@ func TestSubject3(t *testing.T) {
 
 		<-time.After(time.Second)
 		NextChanItem(subject)(pipe2())
+
+		Next(subject)(3)
+
 		subject.Close()
 	}()
 
@@ -91,6 +94,6 @@ func TestSubject3(t *testing.T) {
 
 	assert.Equal(t,
 		result,
-		[]int{108, 112},
+		[]int{108, 112, 3},
 	)
 }
