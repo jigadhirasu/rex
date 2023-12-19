@@ -1,4 +1,4 @@
-// package rex
+package rex
 
 // func Scan[A, B any](f Transfer2[B, A, B]) func(iterable Iterable[A]) Reader[B] {
 // 	return func(iterable Iterable[A]) Reader[B] {
