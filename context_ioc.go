@@ -73,35 +73,3 @@ func Delete(ctx Context, key string) {
 func String2Any(value string) any {
 	return value
 }
-
-// 等待只能設置一次的值
-func Wait[A any](ctx Context, key string) func() A {
-	// chan 還沒建立就先建立
-	if _, ok := Maybe[any](ctx, key); !ok {
-		Set(ctx, key, make(chan A, 1))
-	}
-
-	ch := Get[chan A](ctx, key)
-	var a A
-
-	// 可以取很多次
-	return func() A {
-		if v, ok := <-ch; ok {
-			a = v
-			close(ch)
-		}
-
-		return a
-	}
-}
-
-// 傳入有人在等的值
-func Send[A any](ctx Context, key string, value A) {
-	// chan 還沒建立就先建立
-	if _, ok := Maybe[any](ctx, key); !ok {
-		Set(ctx, key, make(chan A, 1))
-	}
-
-	ch := Get[chan A](ctx, key)
-	ch <- value
-}
