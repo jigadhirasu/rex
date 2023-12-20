@@ -18,3 +18,14 @@ func (subject Subject[A]) Close() {
 	next, _ := subject()
 	close(next)
 }
+
+// OnErrorStrategy is the Observable error strategy.
+type OnErrorStrategy uint32
+
+const (
+	// StopOnError is the default error strategy.
+	// An operator will stop processing items on error.
+	StopOnError OnErrorStrategy = iota
+	// ContinueOnError means an operator will continue processing items after an error.
+	ContinueOnError
+)

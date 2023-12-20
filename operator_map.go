@@ -1,5 +1,7 @@
 package rex
 
+import "sync"
+
 // 有Side Effect的Step
 func Map[A, B any](f Func1[A, B]) func(iterable Iterable[A]) Reader[B] {
 	return func(iterable Iterable[A]) Reader[B] {
@@ -8,26 +10,39 @@ func Map[A, B any](f Func1[A, B]) func(iterable Iterable[A]) Reader[B] {
 
 			go func() {
 				defer close(ch)
-				defer Catcher[B](ch)
 
 				source := iterable()
-				for {
-					item, ok := <-source
-					if !ok {
-						return
-					}
 
-					a, err := item()
-					if err != nil {
-						ch <- ItemError[B](err)
-						break
-					}
+				poolSize := 1
+				wg := new(sync.WaitGroup)
+				wg.Add(poolSize)
 
-					if !sendItem(ctx, ch, ItemAError(f(ctx, a))) {
-						ch <- ItemError[B](ctx.Err())
-						return
+				task := func() {
+					defer Catcher[B](ch)
+					defer wg.Done()
+
+					for {
+						item, ok := <-source
+						if !ok {
+							return
+						}
+
+						a, err := item()
+						if err != nil {
+							ch <- ItemError[B](err)
+							break
+						}
+
+						if !sendItem(ctx, ch, ItemAError(f(ctx, a))) {
+							ch <- ItemError[B](ctx.Err())
+							return
+						}
 					}
 				}
+
+				WithPool(ctx, poolSize, task)
+
+				wg.Wait()
 			}()
 
 			return FromChanItem[B](ch)
