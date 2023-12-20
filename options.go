@@ -1,8 +1,8 @@
 package rex
 
 type options struct {
-	poolSize        int
-	bufferSize      int
+	poolSize        uint32
+	bufferSize      uint32
 	OnErrorStrategy OnErrorStrategy
 }
 
@@ -22,8 +22,20 @@ func newOptions(opts ...applyOption) options {
 	return *op
 }
 
-func WithPool(size int) applyOption {
+func WithPool(size uint32) applyOption {
 	return func(o *options) {
 		o.poolSize = size
+	}
+}
+
+func WithBuffer(size uint32) applyOption {
+	return func(o *options) {
+		o.bufferSize = size
+	}
+}
+
+func WithOnErrorStrategy(strategy OnErrorStrategy) applyOption {
+	return func(o *options) {
+		o.OnErrorStrategy = strategy
 	}
 }

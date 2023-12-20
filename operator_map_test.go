@@ -2,36 +2,30 @@ package rex
 
 import (
 	"context"
-	"fmt"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMap1(t *testing.T) {
 
-	start := time.Now()
-
 	pipe := Pipe2(
 		Map1[int](func(ctx Context, a int) (int, error) {
 			return a + 1, nil
-		})(),
+		})(WithOnErrorStrategy(ContinueOnError)),
 		Map1[int](func(ctx Context, a int) (int, error) {
 			return a - 1, nil
 		})(),
 	)(
-		Range(1, 1000),
+		Range(1, 10),
 	)(
 		NewContext(context.TODO()),
 	)
 
-	_, err := pipe.ToSlice()
+	result, err := pipe.ToSlice()
 
 	assert.NoError(t, err)
 
-	// fmt.Println(result)
-
-	fmt.Println(time.Since(start))
+	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, result)
 
 }
