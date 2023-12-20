@@ -5,7 +5,7 @@ import (
 )
 
 // Distinct 會回傳一個新的 Iterable，此 Iterable 會將重複的元素過濾掉。
-func Distinct[A any, B cmp.Ordered](f Transfer1[A, B]) func(iterable Iterable[A]) Reader[A] {
+func Distinct[A any, B cmp.Ordered](f Transfer1[A, B]) PipeLine[A, A] {
 	return func(iterable Iterable[A]) Reader[A] {
 		return func(ctx Context) Iterable[A] {
 			ch := make(chan Item[A])

@@ -61,7 +61,7 @@ func TestSubject3(t *testing.T) {
 		}),
 		Map1[int](func(ctx Context, a int) (int, error) {
 			return a * 2, nil
-		}),
+		})(),
 		FlatMap1[int](func(ctx Context, a int) Iterable[int] {
 			return From[int](a*2, a*3)
 		}),
@@ -75,7 +75,7 @@ func TestSubject3(t *testing.T) {
 		pipe2 := Pipe1[int](
 			Map1[int](func(ctx Context, a int) (int, error) {
 				return a + 100, nil
-			}),
+			})(),
 		)(
 			pipe,
 		)(ctx)
