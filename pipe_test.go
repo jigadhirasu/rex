@@ -27,10 +27,10 @@ func TestPipe(t *testing.T) {
 	result := Pipe3(
 		Map[float64, int](func(ctx Context, a float64) (int, error) {
 			return int(a * 100), nil
-		})(),
+		}),
 		Map[int, string](func(ctx Context, a int) (string, error) {
 			return fmt.Sprintf("%d", a), nil
-		})(),
+		}),
 		FlatMap[string, A](func(ctx Context, a string) Iterable[A] {
 			<-time.After(time.Millisecond * time.Duration(r.Intn(1000)))
 			return From[A](

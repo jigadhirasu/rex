@@ -6,7 +6,7 @@ import (
 )
 
 // 只有在 PROJECT_MODE=main 時才會捕捉 panic
-func Catcher[A any](ch chan Item[A]) {
+func Catcher[A any](ch chan<- Item[A]) {
 
 	projectMode := os.Getenv("PROJECT_MODE")
 

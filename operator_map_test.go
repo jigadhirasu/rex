@@ -12,10 +12,10 @@ func TestMap1(t *testing.T) {
 	pipe := Pipe2(
 		Map1[int](func(ctx Context, a int) (int, error) {
 			return a + 1, nil
-		})(WithOnErrorStrategy(ContinueOnError)),
+		}, WithOnErrorStrategy(ContinueOnError)),
 		Map1[int](func(ctx Context, a int) (int, error) {
 			return a - 1, nil
-		})(),
+		}),
 	)(
 		Range(1, 10),
 	)(

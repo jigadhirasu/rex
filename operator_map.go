@@ -3,84 +3,88 @@ package rex
 import "sync"
 
 // 有Side Effect的Step
-func Map[A, B any](f Func1[A, B]) func(opts ...applyOption) PipeLine[A, B] {
-	return func(opts ...applyOption) PipeLine[A, B] {
+func Map[A, B any](f Func1[A, B], opts ...applyOption) PipeLine[A, B] {
 
-		op := newOptions(opts...)
+	return func(iterable Iterable[A]) Reader[B] {
 
-		return func(iterable Iterable[A]) Reader[B] {
-			return func(ctx Context) Iterable[B] {
+		return func(ctx Context) Iterable[B] {
 
-				ch := make(chan Item[B], op.bufferSize)
+			op := newOptions(opts...)
 
-				go func() {
-					defer close(ch)
+			ch := make(chan Item[B], op.bufferSize)
 
-					source := iterable()
+			go func() {
+				defer close(ch)
 
-					var wg *sync.WaitGroup
+				source := iterable()
 
-					task := func(wg *sync.WaitGroup) {
-						defer Catcher[B](ch)
-						if wg != nil {
-							defer wg.Done()
-						}
+				var wg *sync.WaitGroup
 
-						for {
-							item, ok := <-source
-							if !ok {
-								return
-							}
+				if op.poolSize == 1 {
+					mapDo[A, B](ctx, source, ch, op, wg, f)
+					return
+				}
 
-							a, err := item()
-							if err != nil {
-								ch <- ItemError[B](err)
-								break
-							}
+				wg = new(sync.WaitGroup)
+				wg.Add(int(op.poolSize))
+				for i := uint32(0); i < op.poolSize; i++ {
+					go mapDo[A, B](ctx, source, ch, op, wg, f)
+				}
+				wg.Wait()
+			}()
 
-							b, err := f(ctx, a)
-
-							if err != nil {
-								if !sendItem(ctx, ch, ItemError[B](err)) {
-									ch <- ItemError[B](ctx.Err())
-									return
-								}
-
-								if op.OnErrorStrategy == ContinueOnError {
-									continue
-								}
-								return
-							}
-
-							if !sendItem(ctx, ch, ItemOf(b)) {
-								ch <- ItemError[B](ctx.Err())
-								return
-							}
-						}
-					}
-
-					if op.poolSize > 1 {
-						wg = new(sync.WaitGroup)
-						wg.Add(int(op.poolSize))
-						for i := uint32(0); i < op.poolSize; i++ {
-							go task(wg)
-						}
-						wg.Wait()
-					} else {
-						task(nil)
-					}
-				}()
-
-				return FromChanItem[B](ch)
-			}
+			return FromChanItem[B](ch)
 		}
 	}
 }
 
-func Map1[A any](f Func1[A, A]) func(opts ...applyOption) PipeLine[A, A] {
-	return func(opts ...applyOption) PipeLine[A, A] {
-		return func(iterable Iterable[A]) Reader[A] {
-			return Map[A, A](f)(opts...)(iterable)
+func Map1[A any](f Func1[A, A], opts ...applyOption) PipeLine[A, A] {
+	return func(iterable Iterable[A]) Reader[A] {
+		return Map[A, A](f, opts...)(iterable)
+	}
+}
+
+func mapDo[A, B any](ctx Context, source <-chan Item[A], expose chan<- Item[B], opt options, wg *sync.WaitGroup, f Func1[A, B]) {
+	defer Catcher[B](expose)
+	if wg != nil {
+		defer wg.Done()
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case item, ok := <-source:
+			if !ok {
+				return
+			}
+
+			a, err := item()
+			if err != nil {
+				if !sendItem(ctx, expose, ItemError[B](err)) {
+					expose <- ItemError[B](ctx.Err())
+					return
+				}
+			}
+
+			b, err := f(ctx, a)
+
+			if err != nil {
+				if !sendItem(ctx, expose, ItemError[B](err)) {
+					expose <- ItemError[B](ctx.Err())
+					return
+				}
+
+				if opt.OnErrorStrategy == ContinueOnError {
+					continue
+				}
+				return
+			}
+
+			if !sendItem(ctx, expose, ItemOf(b)) {
+				expose <- ItemError[B](ctx.Err())
+				return
+			}
 		}
 	}
 }
