@@ -3,6 +3,8 @@ package rex
 type Transfer1[A, B any] func(a A) B
 type Transfer2[A, B, C any] func(a A, b B) C
 
+type TapFunc[A any] func(ctx Context, a A)
+
 type Func0 func(ctx Context) error
 type Func1[A, B any] func(ctx Context, a A) (B, error)
 type Func2[A, B, C any] func(ctx Context, a A, b B) (C, error)
