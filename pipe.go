@@ -14,8 +14,7 @@ func Pipe1[A, B any](p1 PipeLine[A, B]) PipeLine[A, B] {
 func Pipe2[A, B, C any](p1 PipeLine[A, B], p2 PipeLine[B, C]) PipeLine[A, C] {
 	return func(iterable Iterable[A]) Reader[C] {
 		return func(ctx Context) Iterable[C] {
-			s1 := p1(iterable)(ctx)
-			return p2(s1)(ctx)
+			return p2(Pipe1[A, B](p1)(iterable)(ctx))(ctx)
 		}
 	}
 }
@@ -23,9 +22,7 @@ func Pipe2[A, B, C any](p1 PipeLine[A, B], p2 PipeLine[B, C]) PipeLine[A, C] {
 func Pipe3[A, B, C, D any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D]) PipeLine[A, D] {
 	return func(iterable Iterable[A]) Reader[D] {
 		return func(ctx Context) Iterable[D] {
-			s1 := p1(iterable)(ctx)
-			s2 := p2(s1)(ctx)
-			return p3(s2)(ctx)
+			return p3(Pipe2[A, B, C](p1, p2)(iterable)(ctx))(ctx)
 		}
 	}
 }
@@ -33,10 +30,7 @@ func Pipe3[A, B, C, D any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, 
 func Pipe4[A, B, C, D, E any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E]) PipeLine[A, E] {
 	return func(iterable Iterable[A]) Reader[E] {
 		return func(ctx Context) Iterable[E] {
-			s1 := p1(iterable)(ctx)
-			s2 := p2(s1)(ctx)
-			s3 := p3(s2)(ctx)
-			return p4(s3)(ctx)
+			return p4(Pipe3[A, B, C, D](p1, p2, p3)(iterable)(ctx))(ctx)
 		}
 	}
 }
@@ -44,11 +38,7 @@ func Pipe4[A, B, C, D, E any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[
 func Pipe5[A, B, C, D, E, F any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F]) PipeLine[A, F] {
 	return func(iterable Iterable[A]) Reader[F] {
 		return func(ctx Context) Iterable[F] {
-			s1 := p1(iterable)(ctx)
-			s2 := p2(s1)(ctx)
-			s3 := p3(s2)(ctx)
-			s4 := p4(s3)(ctx)
-			return p5(s4)(ctx)
+			return p5(Pipe4[A, B, C, D, E](p1, p2, p3, p4)(iterable)(ctx))(ctx)
 		}
 	}
 }
@@ -56,12 +46,7 @@ func Pipe5[A, B, C, D, E, F any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLi
 func Pipe6[A, B, C, D, E, F, G any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G]) PipeLine[A, G] {
 	return func(iterable Iterable[A]) Reader[G] {
 		return func(ctx Context) Iterable[G] {
-			s1 := p1(iterable)(ctx)
-			s2 := p2(s1)(ctx)
-			s3 := p3(s2)(ctx)
-			s4 := p4(s3)(ctx)
-			s5 := p5(s4)(ctx)
-			return p6(s5)(ctx)
+			return p6(Pipe5[A, B, C, D, E, F](p1, p2, p3, p4, p5)(iterable)(ctx))(ctx)
 		}
 	}
 }
@@ -69,13 +54,7 @@ func Pipe6[A, B, C, D, E, F, G any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 Pip
 func Pipe7[A, B, C, D, E, F, G, H any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H]) PipeLine[A, H] {
 	return func(iterable Iterable[A]) Reader[H] {
 		return func(ctx Context) Iterable[H] {
-			s1 := p1(iterable)(ctx)
-			s2 := p2(s1)(ctx)
-			s3 := p3(s2)(ctx)
-			s4 := p4(s3)(ctx)
-			s5 := p5(s4)(ctx)
-			s6 := p6(s5)(ctx)
-			return p7(s6)(ctx)
+			return p7(Pipe6[A, B, C, D, E, F, G](p1, p2, p3, p4, p5, p6)(iterable)(ctx))(ctx)
 		}
 	}
 }
@@ -83,14 +62,7 @@ func Pipe7[A, B, C, D, E, F, G, H any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 
 func Pipe8[A, B, C, D, E, F, G, H, I any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I]) PipeLine[A, I] {
 	return func(iterable Iterable[A]) Reader[I] {
 		return func(ctx Context) Iterable[I] {
-			s1 := p1(iterable)(ctx)
-			s2 := p2(s1)(ctx)
-			s3 := p3(s2)(ctx)
-			s4 := p4(s3)(ctx)
-			s5 := p5(s4)(ctx)
-			s6 := p6(s5)(ctx)
-			s7 := p7(s6)(ctx)
-			return p8(s7)(ctx)
+			return p8(Pipe7[A, B, C, D, E, F, G, H](p1, p2, p3, p4, p5, p6, p7)(iterable)(ctx))(ctx)
 		}
 	}
 }
@@ -98,15 +70,87 @@ func Pipe8[A, B, C, D, E, F, G, H, I any](p1 PipeLine[A, B], p2 PipeLine[B, C], 
 func Pipe9[A, B, C, D, E, F, G, H, I, J any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I], p9 PipeLine[I, J]) PipeLine[A, J] {
 	return func(iterable Iterable[A]) Reader[J] {
 		return func(ctx Context) Iterable[J] {
-			s1 := p1(iterable)(ctx)
-			s2 := p2(s1)(ctx)
-			s3 := p3(s2)(ctx)
-			s4 := p4(s3)(ctx)
-			s5 := p5(s4)(ctx)
-			s6 := p6(s5)(ctx)
-			s7 := p7(s6)(ctx)
-			s8 := p8(s7)(ctx)
-			return p9(s8)(ctx)
+			return p9(Pipe8[A, B, C, D, E, F, G, H, I](p1, p2, p3, p4, p5, p6, p7, p8)(iterable)(ctx))(ctx)
+		}
+	}
+}
+
+func Pipe10[A, B, C, D, E, F, G, H, I, J, K any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I], p9 PipeLine[I, J], p10 PipeLine[J, K]) PipeLine[A, K] {
+	return func(iterable Iterable[A]) Reader[K] {
+		return func(ctx Context) Iterable[K] {
+			return p10(Pipe9[A, B, C, D, E, F, G, H, I, J](p1, p2, p3, p4, p5, p6, p7, p8, p9)(iterable)(ctx))(ctx)
+		}
+	}
+}
+
+func Pipe11[A, B, C, D, E, F, G, H, I, J, K, L any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I], p9 PipeLine[I, J], p10 PipeLine[J, K], p11 PipeLine[K, L]) PipeLine[A, L] {
+	return func(iterable Iterable[A]) Reader[L] {
+		return func(ctx Context) Iterable[L] {
+			return p11(Pipe10[A, B, C, D, E, F, G, H, I, J, K](p1, p2, p3, p4, p5, p6, p7, p8, p9, p10)(iterable)(ctx))(ctx)
+		}
+	}
+}
+
+func Pipe12[A, B, C, D, E, F, G, H, I, J, K, L, M any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I], p9 PipeLine[I, J], p10 PipeLine[J, K], p11 PipeLine[K, L], p12 PipeLine[L, M]) PipeLine[A, M] {
+	return func(iterable Iterable[A]) Reader[M] {
+		return func(ctx Context) Iterable[M] {
+			return p12(Pipe11[A, B, C, D, E, F, G, H, I, J, K, L](p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11)(iterable)(ctx))(ctx)
+		}
+	}
+}
+
+func Pipe13[A, B, C, D, E, F, G, H, I, J, K, L, M, N any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I], p9 PipeLine[I, J], p10 PipeLine[J, K], p11 PipeLine[K, L], p12 PipeLine[L, M], p13 PipeLine[M, N]) PipeLine[A, N] {
+	return func(iterable Iterable[A]) Reader[N] {
+		return func(ctx Context) Iterable[N] {
+			return p13(Pipe12[A, B, C, D, E, F, G, H, I, J, K, L, M](p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12)(iterable)(ctx))(ctx)
+		}
+	}
+}
+
+func Pipe14[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I], p9 PipeLine[I, J], p10 PipeLine[J, K], p11 PipeLine[K, L], p12 PipeLine[L, M], p13 PipeLine[M, N], p14 PipeLine[N, O]) PipeLine[A, O] {
+	return func(iterable Iterable[A]) Reader[O] {
+		return func(ctx Context) Iterable[O] {
+			return p14(Pipe13[A, B, C, D, E, F, G, H, I, J, K, L, M, N](p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13)(iterable)(ctx))(ctx)
+		}
+	}
+}
+
+func Pipe15[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I], p9 PipeLine[I, J], p10 PipeLine[J, K], p11 PipeLine[K, L], p12 PipeLine[L, M], p13 PipeLine[M, N], p14 PipeLine[N, O], p15 PipeLine[O, P]) PipeLine[A, P] {
+	return func(iterable Iterable[A]) Reader[P] {
+		return func(ctx Context) Iterable[P] {
+			return p15(Pipe14[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O](p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14)(iterable)(ctx))(ctx)
+		}
+	}
+}
+
+func Pipe16[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I], p9 PipeLine[I, J], p10 PipeLine[J, K], p11 PipeLine[K, L], p12 PipeLine[L, M], p13 PipeLine[M, N], p14 PipeLine[N, O], p15 PipeLine[O, P], p16 PipeLine[P, Q]) PipeLine[A, Q] {
+	return func(iterable Iterable[A]) Reader[Q] {
+		return func(ctx Context) Iterable[Q] {
+			return p16(Pipe15[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P](p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15)(iterable)(ctx))(ctx)
+		}
+	}
+}
+
+func Pipe17[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I], p9 PipeLine[I, J], p10 PipeLine[J, K], p11 PipeLine[K, L], p12 PipeLine[L, M], p13 PipeLine[M, N], p14 PipeLine[N, O], p15 PipeLine[O, P], p16 PipeLine[P, Q], p17 PipeLine[Q, R]) PipeLine[A, R] {
+	return func(iterable Iterable[A]) Reader[R] {
+		return func(ctx Context) Iterable[R] {
+			return p17(Pipe16[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q](p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16)(iterable)(ctx))(ctx)
+		}
+	}
+}
+
+func Pipe18[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I], p9 PipeLine[I, J], p10 PipeLine[J, K], p11 PipeLine[K, L], p12 PipeLine[L, M], p13 PipeLine[M, N], p14 PipeLine[N, O], p15 PipeLine[O, P], p16 PipeLine[P, Q], p17 PipeLine[Q, R], p18 PipeLine[R, S]) PipeLine[A, S] {
+	return func(iterable Iterable[A]) Reader[S] {
+		return func(ctx Context) Iterable[S] {
+			return p18(Pipe17[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R](p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17)(iterable)(ctx))(ctx)
+		}
+	}
+}
+
+func Pipe19[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T any](p1 PipeLine[A, B], p2 PipeLine[B, C], p3 PipeLine[C, D], p4 PipeLine[D, E], p5 PipeLine[E, F], p6 PipeLine[F, G], p7 PipeLine[G, H], p8 PipeLine[H, I], p9 PipeLine[I, J], p10 PipeLine[J, K], p11 PipeLine[K, L], p12 PipeLine[L, M], p13 PipeLine[M, N], p14 PipeLine[N, O], p15 PipeLine[O, P], p16 PipeLine[P, Q], p17 PipeLine[Q, R], p18 PipeLine[R, S], p19 PipeLine[S, T]) PipeLine[A, T] {
+	return func(iterable Iterable[A]) Reader[T] {
+		return func(ctx Context) Iterable[T] {
+			return p19(Pipe18[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R](p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18)(iterable)(ctx))(ctx)
 		}
 	}
 }

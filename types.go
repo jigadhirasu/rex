@@ -9,8 +9,8 @@ type Func0 func(ctx Context) error
 type Func1[A, B any] func(ctx Context, a A) (B, error)
 type Func2[A, B, C any] func(ctx Context, a A, b B) (C, error)
 
-type FlatFunc1[A, B any] func(ctx Context, a A) Iterable[B]
-type FlatFunc2[A, B, C any] func(ctx Context, a A, b B) Iterable[C]
+type HFunc1[A, B any] func(ctx Context, a A) Iterable[B]
+type HFunc2[A, B, C any] func(ctx Context, a A, b B) Iterable[C]
 
 type Predicate[A any] func(a A) bool
 

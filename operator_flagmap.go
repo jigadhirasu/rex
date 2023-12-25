@@ -5,7 +5,7 @@ import (
 )
 
 // Iterable 會是一個新的 goroutine 不保證順序
-func FlatMap[A, B any](f FlatFunc1[A, B]) func(iterable Iterable[A]) Reader[B] {
+func FlatMap[A, B any](f HFunc1[A, B]) func(iterable Iterable[A]) Reader[B] {
 	return func(iterable Iterable[A]) Reader[B] {
 		return func(ctx Context) Iterable[B] {
 
@@ -60,7 +60,7 @@ func FlatMap[A, B any](f FlatFunc1[A, B]) func(iterable Iterable[A]) Reader[B] {
 	}
 }
 
-func FlatMap1[A any](f FlatFunc1[A, A]) func(iterable Iterable[A]) Reader[A] {
+func FlatMap1[A any](f HFunc1[A, A]) func(iterable Iterable[A]) Reader[A] {
 	return func(iterable Iterable[A]) Reader[A] {
 		return FlatMap[A, A](f)(iterable)
 	}
