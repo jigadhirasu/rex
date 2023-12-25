@@ -7,10 +7,6 @@ func Map[A, B any](f Func1[A, B], opts ...applyOption) PipeLine[A, B] {
 	return _map(f, opts...)
 }
 
-func Map1[A any](f Func1[A, A], opts ...applyOption) PipeLine[A, A] {
-	return _map(f, opts...)
-}
-
 func _map[A, B any](f Func1[A, B], opts ...applyOption) PipeLine[A, B] {
 	return func(iterable Iterable[A]) Reader[B] {
 		return func(ctx Context) Iterable[B] {

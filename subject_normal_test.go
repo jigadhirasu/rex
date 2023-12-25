@@ -56,13 +56,13 @@ func TestSubject3(t *testing.T) {
 	ctx := NewContext(context.TODO())
 
 	pipe := Pipe3[int](
-		Filter[int](func(a int) bool {
+		Filter(func(a int) bool {
 			return a%2 == 0
 		}),
-		Map1[int](func(ctx Context, a int) (int, error) {
+		Map(func(ctx Context, a int) (int, error) {
 			return a * 2, nil
 		}),
-		FlatMap1[int](func(ctx Context, a int) Iterable[int] {
+		MergeMap(func(ctx Context, a int) Iterable[int] {
 			return From[int](a*2, a*3)
 		}),
 	)(
@@ -73,7 +73,7 @@ func TestSubject3(t *testing.T) {
 
 	go func() {
 		pipe2 := Pipe1[int](
-			Map1[int](func(ctx Context, a int) (int, error) {
+			Map(func(ctx Context, a int) (int, error) {
 				return a + 100, nil
 			}),
 		)(

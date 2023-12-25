@@ -10,10 +10,10 @@ import (
 func TestMap1(t *testing.T) {
 
 	pipe := Pipe2(
-		Map1[int](func(ctx Context, a int) (int, error) {
+		Map(func(ctx Context, a int) (int, error) {
 			return a + 1, nil
 		}, WithOnErrorStrategy(ContinueOnError)),
-		Map1[int](func(ctx Context, a int) (int, error) {
+		Map(func(ctx Context, a int) (int, error) {
 			return a - 1, nil
 		}),
 	)(

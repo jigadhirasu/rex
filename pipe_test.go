@@ -3,7 +3,6 @@ package rex
 import (
 	"context"
 	"fmt"
-	"math/rand"
 	"testing"
 	"time"
 )
@@ -16,11 +15,11 @@ func TestPipe(t *testing.T) {
 
 	ctx := NewContext(context.TODO())
 	go func() {
-		<-time.After(time.Millisecond * 500)
+		<-time.After(time.Millisecond * 2000)
 		ctx.Cancel()
 	}()
 
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	// r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	result := Pipe4(
 		Map[float64, int](func(ctx Context, a float64) (int, error) {
@@ -33,7 +32,6 @@ func TestPipe(t *testing.T) {
 			fmt.Println(a)
 		}),
 		MergeMap[string, A](func(ctx Context, a string) Iterable[A] {
-			<-time.After(time.Millisecond * time.Duration(r.Intn(1000)))
 			return From[A](
 				A{Name: a + "1"},
 				A{Name: a + "2"},

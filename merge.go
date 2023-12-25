@@ -1,6 +1,8 @@
 package rex
 
-import "sync"
+import (
+	"sync"
+)
 
 func MergeMap[A, B any](f HFunc1[A, B]) PipeLine[A, B] {
 	return func(iterable Iterable[A]) Reader[B] {
@@ -28,7 +30,6 @@ func Merge[A any](iterables ...Iterable[A]) Reader[A] {
 }
 
 func _merge[A any](iterables Iterable[Iterable[A]]) Reader[A] {
-
 	return func(ctx Context) Iterable[A] {
 
 		return func() <-chan Item[A] {
@@ -42,8 +43,6 @@ func _merge[A any](iterables Iterable[Iterable[A]]) Reader[A] {
 				wf := func(iterable Iterable[A]) {
 					defer Catcher[A](ch)
 					defer wg.Done()
-
-					wg.Add(1)
 
 					source := iterable()
 
@@ -73,6 +72,8 @@ func _merge[A any](iterables Iterable[Iterable[A]]) Reader[A] {
 						ch <- ItemError[A](err)
 						return
 					}
+
+					wg.Add(1)
 
 					go wf(iterable)
 				}

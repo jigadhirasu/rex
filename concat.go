@@ -1,5 +1,20 @@
 package rex
 
+func ConcatMap[A, B any](f HFunc1[A, B]) PipeLine[A, B] {
+	return func(iterable Iterable[A]) Reader[B] {
+		return func(ctx Context) Iterable[B] {
+			hf := func(ctx Context, a A) (Iterable[B], error) {
+				return f(ctx, a), nil
+			}
+
+			return Pipe2(
+				_map(hf),
+				ConcatALL[B](),
+			)(iterable)(ctx)
+		}
+	}
+}
+
 func ConcatALL[A any](opts ...applyOption) PipeLine[Iterable[A], A] {
 	return func(iterable Iterable[Iterable[A]]) Reader[A] {
 		return _concat(iterable)
