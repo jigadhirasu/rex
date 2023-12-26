@@ -13,19 +13,30 @@ func TestSubject1(t *testing.T) {
 	subject := NewSubject[int]()
 
 	go func() {
-		<-time.After(time.Second)
 		Next(subject)(1, 2, 3)
+		<-time.After(time.Second)
 		Next(subject)(4, 5, 6)
 		subject.Close()
 	}()
 
-	result, err := Subscribe(subject).ToSlice()
+	go func() {
+		result, err := Subscribe(subject).ToSlice()
 
+		assert.NoError(t, err)
+
+		assert.Equal(t,
+			result,
+			[]int{1, 2, 3, 4, 5, 6},
+		)
+	}()
+
+	<-time.After(time.Millisecond * 500)
+	result, err := Subscribe(subject).ToSlice()
 	assert.NoError(t, err)
 
 	assert.Equal(t,
 		result,
-		[]int{1, 2, 3, 4, 5, 6},
+		[]int{4, 5, 6},
 	)
 }
 

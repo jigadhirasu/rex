@@ -1,7 +1,6 @@
 package rex
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -39,7 +38,6 @@ func NewSubjectReplay[A any](replayCount int) Subject[A] {
 				replay = replay[1:]
 			}
 
-			fmt.Println(replay)
 			replayMutex.Unlock()
 
 			for _, subscribe := range subscribes {
