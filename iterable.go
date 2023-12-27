@@ -1,5 +1,7 @@
 package rex
 
+import "time"
+
 // 將slice 轉成 Iterable
 func From[A any](aa ...A) Iterable[A] {
 	return func() <-chan Item[A] {
@@ -65,6 +67,24 @@ func Range(start, count int) Iterable[int] {
 				ch <- ItemOf[int](i)
 			}
 			close(ch)
+		}()
+
+		return ch
+	}
+}
+
+func Interval(duration time.Duration) Iterable[int] {
+	return func() <-chan Item[int] {
+		ch := make(chan Item[int])
+
+		go func() {
+			i := 0
+			for {
+				ch <- ItemOf[int](i)
+				i++
+
+				<-time.After(duration)
+			}
 		}()
 
 		return ch
