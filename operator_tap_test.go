@@ -3,17 +3,20 @@ package rex
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSetValueToContext(t *testing.T) {
+func TestTap(t *testing.T) {
+
+	os.Setenv("PROJECT_MODE", "main")
 
 	ctx := NewContext(context.TODO())
 
 	pipe := Pipe1(
-		SetValueToContext[int](func(ctx Context) error {
+		Tap[int](func(ctx Context, a int) error {
 			panic("ggc")
 		}),
 	)(

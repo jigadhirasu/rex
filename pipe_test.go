@@ -28,8 +28,9 @@ func TestPipe(t *testing.T) {
 		Map[int, string](func(ctx Context, a int) (string, error) {
 			return fmt.Sprintf("%d", a), nil
 		}),
-		Tap[string](func(ctx Context, a string) {
+		Tap[string](func(ctx Context, a string) error {
 			fmt.Println(a)
+			return nil
 		}),
 		MergeMap[string, A](func(ctx Context, a string) Iterable[A] {
 			return From[A](
