@@ -28,7 +28,7 @@ func BufferTime[A any](duration time.Duration, opts ...applyOption) PipeLine[A, 
 
 						a, err := item()
 						if err != nil {
-							if !sendItem(ctx, ch, ItemError[[]A](err)) {
+							if !SendItem(ctx, ch, ItemError[[]A](err)) {
 								ch <- ItemError[[]A](ctx.Err())
 								return
 							}
@@ -41,7 +41,7 @@ func BufferTime[A any](duration time.Duration, opts ...applyOption) PipeLine[A, 
 							continue
 						}
 
-						if !sendItem(ctx, ch, ItemOf(buf)) {
+						if !SendItem(ctx, ch, ItemOf(buf)) {
 							ch <- ItemError[[]A](ctx.Err())
 							return
 						}

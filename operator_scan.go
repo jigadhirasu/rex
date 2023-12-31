@@ -27,7 +27,7 @@ package rex
 
 // 					initial = f(initial, a)
 
-// 					if !sendItem(ctx, ch, ItemOf(initial)) {
+// 					if !SendItem(ctx, ch, ItemOf(initial)) {
 // 						ch <- ItemError[B](ctx.Err())
 // 						return
 // 					}

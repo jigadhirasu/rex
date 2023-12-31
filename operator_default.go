@@ -18,7 +18,7 @@ func Default[A any](a A) PipeLine[A, A] {
 					if !ok {
 						break
 					}
-					if !sendItem(ctx, ch, item) {
+					if !SendItem(ctx, ch, item) {
 						ch <- ItemError[A](ctx.Err())
 						return
 					}

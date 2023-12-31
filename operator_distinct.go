@@ -35,7 +35,7 @@ func Distinct[A any, B cmp.Ordered](f Transfer1[A, B]) PipeLine[A, A] {
 
 					offset[f(a)] = true
 
-					if !sendItem(ctx, ch, item) {
+					if !SendItem(ctx, ch, item) {
 						ch <- ItemError[A](ctx.Err())
 						return
 					}

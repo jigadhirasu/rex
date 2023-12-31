@@ -46,7 +46,7 @@ func _concat[A any](iterables Iterable[Iterable[A]]) Reader[A] {
 							return
 						}
 
-						if !sendItem(ctx, ch, item) {
+						if !SendItem(ctx, ch, item) {
 							ch <- ItemError[A](ctx.Err())
 							return
 						}

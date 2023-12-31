@@ -26,7 +26,7 @@ func (i Item[A]) Error() error {
 	return err
 }
 
-func sendItem[A any](ctx Context, ch chan<- Item[A], item Item[A]) bool {
+func SendItem[A any](ctx Context, ch chan<- Item[A], item Item[A]) bool {
 	select {
 	case <-ctx.Done():
 		return false

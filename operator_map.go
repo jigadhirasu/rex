@@ -37,7 +37,7 @@ func _map[A, B any](f Func1[A, B], opts ...applyOption) PipeLine[A, B] {
 
 						a, err := item()
 						if err != nil {
-							if !sendItem(ctx, ch, ItemError[B](err)) {
+							if !SendItem(ctx, ch, ItemError[B](err)) {
 								ch <- ItemError[B](ctx.Err())
 								return
 							}
@@ -46,7 +46,7 @@ func _map[A, B any](f Func1[A, B], opts ...applyOption) PipeLine[A, B] {
 						b, err := f(ctx, a)
 
 						if err != nil {
-							if !sendItem(ctx, ch, ItemError[B](err)) {
+							if !SendItem(ctx, ch, ItemError[B](err)) {
 								ch <- ItemError[B](ctx.Err())
 								return
 							}
@@ -57,7 +57,7 @@ func _map[A, B any](f Func1[A, B], opts ...applyOption) PipeLine[A, B] {
 							return
 						}
 
-						if !sendItem(ctx, ch, ItemOf(b)) {
+						if !SendItem(ctx, ch, ItemOf(b)) {
 							ch <- ItemError[B](ctx.Err())
 							return
 						}

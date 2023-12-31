@@ -27,7 +27,7 @@ func Filter[A any](f Predicate[A]) func(iterable Iterable[A]) Reader[A] {
 						continue
 					}
 
-					if !sendItem(ctx, ch, item) {
+					if !SendItem(ctx, ch, item) {
 						ch <- ItemError[A](ctx.Err())
 						return
 					}

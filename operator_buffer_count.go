@@ -20,7 +20,7 @@ func BufferCount[A any](count int, opts ...applyOption) PipeLine[A, []A] {
 					item, ok := <-source
 					if !ok {
 						if len(buf) > 0 {
-							if !sendItem(ctx, ch, ItemOf(buf)) {
+							if !SendItem(ctx, ch, ItemOf(buf)) {
 								ch <- ItemError[[]A](ctx.Err())
 								return
 							}
@@ -30,7 +30,7 @@ func BufferCount[A any](count int, opts ...applyOption) PipeLine[A, []A] {
 
 					a, err := item()
 					if err != nil {
-						if !sendItem(ctx, ch, ItemError[[]A](err)) {
+						if !SendItem(ctx, ch, ItemError[[]A](err)) {
 							ch <- ItemError[[]A](ctx.Err())
 							return
 						}
@@ -39,7 +39,7 @@ func BufferCount[A any](count int, opts ...applyOption) PipeLine[A, []A] {
 					buf = append(buf, a)
 
 					if len(buf) == count {
-						if !sendItem(ctx, ch, ItemOf(buf)) {
+						if !SendItem(ctx, ch, ItemOf(buf)) {
 							ch <- ItemError[[]A](ctx.Err())
 							return
 						}

@@ -21,7 +21,7 @@ func take[A any](n int) PipeLine[A, A] {
 					if !ok {
 						return
 					}
-					if !sendItem(ctx, ch, item) {
+					if !SendItem(ctx, ch, item) {
 						ch <- ItemError[A](ctx.Err())
 						return
 					}

@@ -24,20 +24,20 @@ func _tap[A any](f Func0[A], opts ...applyOption) PipeLine[A, A] {
 
 					a, err := item()
 					if err != nil {
-						if !sendItem(ctx, ch, ItemError[A](err)) {
+						if !SendItem(ctx, ch, ItemError[A](err)) {
 							ch <- ItemError[A](ctx.Err())
 							return
 						}
 					}
 
 					if err := f(ctx, a); err != nil {
-						if !sendItem(ctx, ch, ItemError[A](err)) {
+						if !SendItem(ctx, ch, ItemError[A](err)) {
 							ch <- ItemError[A](ctx.Err())
 							return
 						}
 					}
 
-					if !sendItem(ctx, ch, ItemOf(a)) {
+					if !SendItem(ctx, ch, ItemOf(a)) {
 						ch <- ItemError[A](ctx.Err())
 						return
 					}
