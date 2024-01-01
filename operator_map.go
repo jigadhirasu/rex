@@ -41,6 +41,11 @@ func _map[A, B any](f Func1[A, B], opts ...applyOption) PipeLine[A, B] {
 								ch <- ItemError[B](ctx.Err())
 								return
 							}
+
+							if op.OnErrorStrategy == ContinueOnError {
+								continue
+							}
+							return
 						}
 
 						b, err := f(ctx, a)
