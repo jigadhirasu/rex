@@ -26,15 +26,17 @@ func _tap[A any](f Func0[A], opts ...applyOption) PipeLine[A, A] {
 					if err != nil {
 						if !SendItem(ctx, ch, ItemError[A](err)) {
 							ch <- ItemError[A](ctx.Err())
-							return
 						}
+
+						return
 					}
 
 					if err := f(ctx, a); err != nil {
 						if !SendItem(ctx, ch, ItemError[A](err)) {
 							ch <- ItemError[A](ctx.Err())
-							return
 						}
+
+						return
 					}
 
 					if !SendItem(ctx, ch, ItemOf(a)) {

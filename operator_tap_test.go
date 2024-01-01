@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTap(t *testing.T) {
+func TestTap1(t *testing.T) {
 
 	os.Setenv("PROJECT_MODE", "main")
 
