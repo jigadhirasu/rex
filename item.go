@@ -1,5 +1,10 @@
 package rex
 
+import (
+	"fmt"
+	"reflect"
+)
+
 func ItemOf[A any](a A) Item[A] {
 	return func() (A, error) {
 		return a, nil
@@ -24,6 +29,25 @@ type Item[A any] func() (A, error)
 func (i Item[A]) Error() error {
 	_, err := i()
 	return err
+}
+
+func (i Item[A]) Equal(itemB Item[A]) bool {
+	a, errA := i()
+	b, errB := itemB()
+
+	fmt.Println(a, b, errA, errB)
+
+	equal := reflect.DeepEqual(a, b)
+
+	if errA != nil {
+		if errB == nil {
+			return false
+		}
+
+		return errA.Error() == errB.Error() && equal
+	}
+
+	return equal
 }
 
 func SendItem[A any](ctx Context, ch chan<- Item[A], item Item[A]) bool {
