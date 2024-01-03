@@ -2,6 +2,7 @@ package rex
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 )
@@ -11,7 +12,7 @@ func TestZip1(t *testing.T) {
 	iter2 := Interval(100 * time.Millisecond)
 
 	pipe := Pipe2(
-		ZipFromIterable[int, int, int](iter2, func(ctx Context, a, b int) (int, error) {
+		ZipWith[int, int, int](iter2, func(ctx Context, a, b int) (int, error) {
 			return a + b, nil
 		}, WithOnErrorStrategy(ContinueOnError)),
 		Map[int](func(ctx Context, a int) (int, error) {
@@ -27,13 +28,55 @@ func TestZip1(t *testing.T) {
 
 	ctx := NewContext(context.TODO())
 
-	result, err := pipe(ctx).ToSlice()
+	Assert[int](t, pipe(ctx),
+		FromItem[int](
+			ItemOf(0),
+			ItemOf(2),
+			ItemOf(4),
+			ItemError[int](errors.New("context canceled")),
+		),
+	)
+}
 
-	if err != nil {
-		t.Error(err)
-	}
+func TestZip2(t *testing.T) {
 
-	if len(result) != 5 {
-		t.Error("Expected 5 items")
-	}
+	db := NewSubjectReplay[int](1)
+	go func() {
+		Next(db)(10)
+
+		<-time.After(time.Second)
+		db.Close()
+	}()
+
+	ctx := NewContext(context.TODO())
+
+	go func() {
+		pipe1 := Pipe2(
+			Take[int](3),
+			ZipWith[int, int, int](Subscribe(db), func(ctx Context, a, b int) (int, error) {
+				return a + b, nil
+			}),
+		)(
+			Range(0, 10),
+		)
+		Assert(t, pipe1(ctx),
+			FromItem[int](
+				ItemOf(10),
+			),
+		)
+	}()
+
+	pipe2 := Pipe1(
+		ZipWith[int, int, int](Subscribe(db), func(ctx Context, a, b int) (int, error) {
+			return a + b, nil
+		}),
+	)(
+		Range(10, 10),
+	)
+	Assert(t, pipe2(ctx),
+		FromItem[int](
+			ItemOf(20),
+		),
+	)
+
 }

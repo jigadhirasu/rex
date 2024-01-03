@@ -35,16 +35,15 @@ func (i Item[A]) Equal(itemB Item[A]) bool {
 	a, errA := i()
 	b, errB := itemB()
 
-	fmt.Println(a, b, errA, errB)
+	fmt.Println("A:", a, errA, "B:", b, errB)
 
 	equal := reflect.DeepEqual(a, b)
 
 	if errA != nil {
-		if errB == nil {
-			return false
+		if errB != nil {
+			return errA.Error() == errB.Error() && equal
 		}
-
-		return errA.Error() == errB.Error() && equal
+		return false
 	}
 
 	return equal

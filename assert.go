@@ -19,6 +19,16 @@ func Assert[A any](t *testing.T, iterableA, iterableB Iterable[A]) {
 			return
 		}
 
+		if okA && !okB {
+			assert.Fail(t, "iterableA has more items")
+			return
+		}
+
+		if !okA && okB {
+			assert.Fail(t, "iterableB has more items")
+			return
+		}
+
 		assert.True(t, itemA.Equal(itemB))
 	}
 }

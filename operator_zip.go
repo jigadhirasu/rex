@@ -1,11 +1,11 @@
 package rex
 
-func ZipFromIterable[A, B, C any](iterableB Iterable[B], f Func2[A, B, C], opts ...applyOption) PipeLine[A, C] {
+func ZipWith[A, B, C any](iterableB Iterable[B], f Func2[A, B, C], opts ...applyOption) PipeLine[A, C] {
 	return _zip[A, B, C](iterableB, f, opts...)
 }
 
 func _zip[A, B, C any](iterableB Iterable[B], f Func2[A, B, C], opts ...applyOption) PipeLine[A, C] {
-	return func(iterable Iterable[A]) Reader[C] {
+	return func(iterableA Iterable[A]) Reader[C] {
 		return func(ctx Context) Iterable[C] {
 
 			op := newOptions(opts...)
@@ -15,7 +15,7 @@ func _zip[A, B, C any](iterableB Iterable[B], f Func2[A, B, C], opts ...applyOpt
 			go func() {
 				defer close(ch)
 
-				sourceA := iterable()
+				sourceA := iterableA()
 				sourceB := iterableB()
 
 				for {
