@@ -52,7 +52,9 @@ func BufferTime[A any](duration time.Duration, opts ...applyOption) PipeLine[A, 
 
 			}()
 
-			return FromChanItem[[]A](ch)
+			return func() <-chan Item[[]A] {
+				return ch
+			}
 		}
 	}
 

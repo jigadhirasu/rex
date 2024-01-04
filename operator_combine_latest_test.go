@@ -3,28 +3,36 @@ package rex
 import (
 	"context"
 	"testing"
-	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCombineLatest(t *testing.T) {
 
-	pipe := Pipe2(
-		Take[int](3),
-		CombineLatestWith[int, int, int](Interval(time.Second), func(ctx Context, a, b int) (int, error) {
+	ctx := NewContext(context.Background())
+
+	pipe := Pipe1(
+		ShareReplay[int](1),
+	)(
+		From[int](10),
+	)(ctx)
+
+	pipe1 := Pipe1(
+		CombineLatestWith(pipe, func(ctx Context, a, b int) (int, error) {
 			return a + b, nil
 		}),
 	)(
-		Interval(time.Millisecond * 200),
+		Range(1, 5),
 	)
 
-	ctx := NewContext(context.TODO())
+	f := func() {
+		result, err := pipe1(ctx).ToSlice()
+		assert.NoError(t, err)
+		assert.Equal(t, []int{11, 12, 13, 14, 15}, result)
+	}
 
-	Assert(t, pipe(ctx),
-		FromItem[int](
-			ItemOf(0),
-			ItemOf(1),
-			ItemOf(2),
-		),
-	)
+	go f()
+	go f()
+	f()
 
 }

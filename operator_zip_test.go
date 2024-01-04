@@ -5,6 +5,8 @@ import (
 	"errors"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestZip1(t *testing.T) {
@@ -28,14 +30,15 @@ func TestZip1(t *testing.T) {
 
 	ctx := NewContext(context.TODO())
 
-	Assert[int](t, pipe(ctx),
+	assert.NoError(t, Equal(pipe(ctx),
 		FromItem[int](
 			ItemOf(0),
 			ItemOf(2),
 			ItemOf(4),
 			ItemError[int](errors.New("context canceled")),
 		),
-	)
+	))
+
 }
 
 func TestZip2(t *testing.T) {
@@ -59,11 +62,13 @@ func TestZip2(t *testing.T) {
 		)(
 			Range(0, 10),
 		)
-		Assert(t, pipe1(ctx),
+
+		assert.NoError(t, Equal(pipe1(ctx),
 			FromItem[int](
 				ItemOf(10),
 			),
-		)
+		))
+
 	}()
 
 	pipe2 := Pipe1(
@@ -73,10 +78,12 @@ func TestZip2(t *testing.T) {
 	)(
 		Range(10, 10),
 	)
-	Assert(t, pipe2(ctx),
+
+	assert.NoError(t, Equal(
+		pipe2(ctx),
 		FromItem[int](
 			ItemOf(20),
 		),
-	)
+	))
 
 }

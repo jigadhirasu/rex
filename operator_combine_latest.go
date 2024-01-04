@@ -36,72 +36,77 @@ func _combineLatest[A, B, C any](iterableB Iterable[B], f Func2[A, B, C], opts .
 				}
 
 				itemA, okA := <-sourceA
-				if !okA {
-					return
-				}
-				a, err := itemA()
-				if err != nil {
-					if !SendItem(ctx, ch, ItemError[C](err)) {
-						ch <- ItemError[C](ctx.Err())
-					}
+				if okA {
+					a, err := itemA()
+					if err != nil {
+						if !SendItem(ctx, ch, ItemError[C](err)) {
+							ch <- ItemError[C](ctx.Err())
+						}
 
-					return
+						return
+					}
+					Va = a
 				}
-				Va = a
 
 				itemB, okB := <-sourceB
-				if !okB {
-					return
-				}
-				b, err := itemB()
-				if err != nil {
-					if !SendItem(ctx, ch, ItemError[C](err)) {
-						ch <- ItemError[C](ctx.Err())
-					}
+				if okB {
+					b, err := itemB()
+					if err != nil {
+						if !SendItem(ctx, ch, ItemError[C](err)) {
+							ch <- ItemError[C](ctx.Err())
+						}
 
+						return
+					}
+					Vb = b
+				}
+
+				if !okA && !okB {
 					return
 				}
-				Vb = b
 
 				next(ctx, Va, Vb)
 				// ------所有來源都至少有一個才會開始------
 
 				for {
 					select {
-					case itemA, okA := <-sourceA:
-						if !okA {
-							return
-						}
-						a, err := itemA()
-						if err != nil {
-							if !SendItem(ctx, ch, ItemError[C](err)) {
-								ch <- ItemError[C](ctx.Err())
-							}
+					case itemA, okA = <-sourceA:
+						if okA {
+							a, err := itemA()
+							if err != nil {
+								if !SendItem(ctx, ch, ItemError[C](err)) {
+									ch <- ItemError[C](ctx.Err())
+								}
 
-							return
-						}
-						Va = a
-					case itemB, okB := <-sourceB:
-						if !okB {
-							return
-						}
-						b, err := itemB()
-						if err != nil {
-							if !SendItem(ctx, ch, ItemError[C](err)) {
-								ch <- ItemError[C](ctx.Err())
+								return
 							}
-
-							return
+							Va = a
+							next(ctx, Va, Vb)
 						}
-						Vb = b
+					case itemB, okB = <-sourceB:
+						if okB {
+							b, err := itemB()
+							if err != nil {
+								if !SendItem(ctx, ch, ItemError[C](err)) {
+									ch <- ItemError[C](ctx.Err())
+								}
+
+								return
+							}
+							Vb = b
+							next(ctx, Va, Vb)
+						}
 					}
 
-					next(ctx, Va, Vb)
+					if !okA && !okB {
+						return
+					}
 				}
 			}()
 
-			return FromChanItem[C](ch)
-
+			return func() <-chan Item[C] {
+				return ch
+			}
 		}
 	}
 }

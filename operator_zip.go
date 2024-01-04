@@ -72,7 +72,9 @@ func _zip[A, B, C any](iterableB Iterable[B], f Func2[A, B, C], opts ...applyOpt
 				}
 			}()
 
-			return FromChanItem[C](ch)
+			return func() <-chan Item[C] {
+				return ch
+			}
 		}
 	}
 }

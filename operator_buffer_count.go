@@ -50,7 +50,9 @@ func BufferCount[A any](count int, opts ...applyOption) PipeLine[A, []A] {
 
 			}()
 
-			return FromChanItem[[]A](ch)
+			return func() <-chan Item[[]A] {
+				return ch
+			}
 		}
 	}
 

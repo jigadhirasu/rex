@@ -83,7 +83,10 @@ func _map[A, B any](f Func1[A, B], opts ...applyOption) PipeLine[A, B] {
 				wg.Wait()
 
 			}()
-			return FromChanItem[B](ch)
+
+			return func() <-chan Item[B] {
+				return ch
+			}
 		}
 	}
 }

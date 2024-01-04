@@ -2,10 +2,10 @@ package rex
 
 // 取得前 n 個元素
 func Take[A any](n int) PipeLine[A, A] {
-	return take[A](n)
+	return _take[A](n)
 }
 
-func take[A any](n int) PipeLine[A, A] {
+func _take[A any](n int) PipeLine[A, A] {
 	return func(iterable Iterable[A]) Reader[A] {
 		return func(ctx Context) Iterable[A] {
 			ch := make(chan Item[A])
@@ -28,7 +28,9 @@ func take[A any](n int) PipeLine[A, A] {
 				}
 			}()
 
-			return FromChanItem[A](ch)
+			return func() <-chan Item[A] {
+				return ch
+			}
 		}
 	}
 }

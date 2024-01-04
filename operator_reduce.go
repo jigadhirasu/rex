@@ -33,7 +33,9 @@ func Reduce[A, B any](f Transfer2[B, A, B]) func(iterable Iterable[A]) Reader[B]
 				}
 			}()
 
-			return FromChanItem[B](ch)
+			return func() <-chan Item[B] {
+				return ch
+			}
 		}
 	}
 }

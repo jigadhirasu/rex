@@ -55,15 +55,15 @@ func NewSubjectReplay[A any](replayCount int) Subject[A] {
 		go func() {
 			defer close(ch)
 
-			if closed {
-				return
-			}
-
 			replayMutex.RLock()
 			for _, a := range replay {
 				ch <- ItemOf[A](a)
 			}
 			replayMutex.RUnlock()
+
+			if closed {
+				return
+			}
 
 			for item := range source {
 				ch <- item

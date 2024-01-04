@@ -1,7 +1,11 @@
 package rex
 
-// 過濾掉不符合條件的元素
-func Filter[A any](f Predicate[A]) func(iterable Iterable[A]) Reader[A] {
+// 取得前 n 個元素
+func Skip[A any](n int) PipeLine[A, A] {
+	return _skip[A](n)
+}
+
+func _skip[A any](n int) PipeLine[A, A] {
 	return func(iterable Iterable[A]) Reader[A] {
 		return func(ctx Context) Iterable[A] {
 			ch := make(chan Item[A])
@@ -11,22 +15,20 @@ func Filter[A any](f Predicate[A]) func(iterable Iterable[A]) Reader[A] {
 				defer Catcher[A](ch)
 
 				source := iterable()
+
+				for i := 0; i < n; i++ {
+					_, ok := <-source
+					if !ok {
+						return
+					}
+					continue
+				}
+
 				for {
 					item, ok := <-source
 					if !ok {
 						return
 					}
-
-					a, err := item()
-					if err != nil {
-						ch <- ItemError[A](err)
-						return
-					}
-
-					if !f(a) {
-						continue
-					}
-
 					if !SendItem(ctx, ch, item) {
 						ch <- ItemError[A](ctx.Err())
 						return

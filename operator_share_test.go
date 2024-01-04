@@ -2,37 +2,75 @@ package rex
 
 import (
 	"context"
+	"fmt"
+	"slices"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestShare(t *testing.T) {
 
-	pipe := Pipe1(
-		Share[int](),
+	ctx := NewContext(context.TODO())
+
+	pipe := Pipe2(
+		Take[int](2),
+		Share[int],
 	)(
-		Range(1, 5),
-	)
+		Interval(time.Millisecond * 200),
+	)(ctx)
+
+	okf := func(result []int) {
+		fmt.Println(result)
+		assert.LessOrEqual(t, len(result), 2)
+	}
+
+	f := func() {
+		result, err := pipe.ToSlice()
+		assert.NoError(t, err)
+		okf(result)
+	}
+
+	go f()
+	go f()
+	go f()
+	f()
+	f()
+	f()
+
+	// wait all complete
+	<-time.After(time.Millisecond * 500)
+
+}
+
+func TestShareReplay(t *testing.T) {
 
 	ctx := NewContext(context.TODO())
 
-	go func() {
-		Assert(t, pipe(ctx), FromItem[int](
-			ItemOf(1),
-			ItemOf(2),
-			ItemOf(3),
-			ItemOf(4),
-			ItemOf(5),
-		))
-	}()
+	pipe := Pipe1(
+		ShareReplay[int](3),
+	)(
+		Range(1, 5),
+	)(ctx)
 
-	<-time.After(time.Second)
+	okf := func(result []int) {
+		for _, v := range []int{3, 4, 5} {
+			assert.True(t, slices.Contains(result, v))
+		}
+	}
 
-	Assert(t, pipe(ctx), FromItem[int](
-		ItemOf(1),
-		ItemOf(2),
-		ItemOf(3),
-		ItemOf(4),
-		ItemOf(5),
-	))
+	f := func() {
+		result, err := pipe.ToSlice()
+		assert.NoError(t, err)
+		okf(result)
+	}
+
+	go f()
+	go f()
+	go f()
+	f()
+	f()
+	f()
+
 }

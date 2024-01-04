@@ -38,7 +38,9 @@ func _to[A, B any](b B) PipeLine[A, B] {
 				}
 			}()
 
-			return FromChanItem[B](ch)
+			return func() <-chan Item[B] {
+				return ch
+			}
 		}
 	}
 }

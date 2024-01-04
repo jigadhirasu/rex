@@ -46,7 +46,9 @@ func _tap[A any](f Func0[A], opts ...applyOption) PipeLine[A, A] {
 				}
 			}()
 
-			return FromChanItem[A](ch)
+			return func() <-chan Item[A] {
+				return ch
+			}
 		}
 	}
 }

@@ -39,6 +39,8 @@ func Average[A Number](iterable Iterable[A]) Reader[A] {
 			}
 		}()
 
-		return FromChanItem[A](ch)
+		return func() <-chan Item[A] {
+			return ch
+		}
 	}
 }

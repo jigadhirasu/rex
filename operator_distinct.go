@@ -42,7 +42,9 @@ func Distinct[A any, B cmp.Ordered](f Transfer1[A, B]) PipeLine[A, A] {
 				}
 			}()
 
-			return FromChanItem[A](ch)
+			return func() <-chan Item[A] {
+				return ch
+			}
 		}
 	}
 }

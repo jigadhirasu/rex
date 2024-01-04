@@ -4,15 +4,19 @@ import (
 	"context"
 	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestAssert1(t *testing.T) {
+func TestEqual1(t *testing.T) {
 
-	Assert(
-		t,
+	var err error
+	err = Equal(
 		Range(0, 5),
 		From(0, 1, 2, 3, 4),
 	)
+
+	assert.NoError(t, err)
 
 	ctx := NewContext(context.TODO())
 	pipe := Pipe1(
@@ -24,8 +28,7 @@ func TestAssert1(t *testing.T) {
 		}),
 	)(Range(0, 10))(ctx)
 
-	Assert(
-		t,
+	err = Equal(
 		pipe,
 		FromItem(
 			ItemOf(0),
@@ -34,4 +37,6 @@ func TestAssert1(t *testing.T) {
 			ItemError[int](errors.New("error a > 2")),
 		),
 	)
+
+	assert.NoError(t, err)
 }
