@@ -1,7 +1,6 @@
 package rex
 
 import (
-	"fmt"
 	"reflect"
 )
 
@@ -34,8 +33,6 @@ func (i Item[A]) Error() error {
 func (i Item[A]) Equal(itemB Item[A]) bool {
 	a, errA := i()
 	b, errB := itemB()
-
-	fmt.Println("A:", a, errA, "B:", b, errB)
 
 	equal := reflect.DeepEqual(a, b)
 

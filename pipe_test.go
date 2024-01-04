@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	"testing"
-	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type A struct {
@@ -13,24 +14,12 @@ type A struct {
 
 func TestPipe(t *testing.T) {
 
-	ctx := NewContext(context.TODO())
-	go func() {
-		<-time.After(time.Millisecond * 2000)
-		ctx.Cancel()
-	}()
-
-	// r := rand.New(rand.NewSource(time.Now().UnixNano()))
-
-	result := Pipe4(
+	pipe := Pipe3(
 		Map[float64, int](func(ctx Context, a float64) (int, error) {
 			return int(a * 100), nil
 		}),
 		Map[int, string](func(ctx Context, a int) (string, error) {
 			return fmt.Sprintf("%d", a), nil
-		}),
-		Tap[string](func(ctx Context, a string) error {
-			fmt.Println(a)
-			return nil
 		}),
 		MergeMap[string, A](func(ctx Context, a string) Iterable[A] {
 			return From[A](
@@ -41,10 +30,14 @@ func TestPipe(t *testing.T) {
 		}),
 	)(
 		From[float64](1, 2, 3),
-	)(ctx)
+	)
 
-	for item := range result() {
-		fmt.Println(item())
-	}
+	ctx := NewContext(context.TODO())
+
+	result, err := pipe(ctx).ToSlice()
+
+	assert.NoError(t, err)
+
+	assert.Equal(t, 9, len(result))
 
 }

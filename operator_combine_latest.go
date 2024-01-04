@@ -1,7 +1,5 @@
 package rex
 
-import "fmt"
-
 func CombineLatestWith[A, B, C any](iterableB Iterable[B], f Func2[A, B, C], opts ...applyOption) PipeLine[A, C] {
 	return _combineLatest[A, B, C](iterableB, f, opts...)
 }
@@ -69,7 +67,6 @@ func _combineLatest[A, B, C any](iterableB Iterable[B], f Func2[A, B, C], opts .
 				// ------所有來源都至少有一個才會開始------
 
 				for {
-					fmt.Println("GGG", Va, Vb)
 					select {
 					case itemA, okA := <-sourceA:
 						if !okA {
