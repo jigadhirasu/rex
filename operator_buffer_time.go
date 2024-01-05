@@ -5,54 +5,53 @@ import "time"
 func BufferTime[A any](duration time.Duration, opts ...applyOption) PipeLine[A, []A] {
 	return func(iterable Iterable[A]) Reader[[]A] {
 		return func(ctx Context) Iterable[[]A] {
+			return func() <-chan Item[[]A] {
+				op := newOptions(opts...)
 
-			op := newOptions(opts...)
+				ch := make(chan Item[[]A], op.bufferSize)
 
-			ch := make(chan Item[[]A], op.bufferSize)
+				go func() {
+					defer close(ch)
+					defer Catcher[[]A](ch)
 
-			go func() {
-				defer close(ch)
-				defer Catcher[[]A](ch)
+					source := iterable()
 
-				source := iterable()
+					buf := []A{}
 
-				buf := []A{}
+					for {
 
-				for {
+						select {
+						case item, ok := <-source:
+							if !ok {
+								return
+							}
 
-					select {
-					case item, ok := <-source:
-						if !ok {
-							return
-						}
+							a, err := item()
+							if err != nil {
+								if !SendItem(ctx, ch, ItemError[[]A](err)) {
+									ch <- ItemError[[]A](ctx.Err())
+									return
+								}
+							}
 
-						a, err := item()
-						if err != nil {
-							if !SendItem(ctx, ch, ItemError[[]A](err)) {
+							buf = append(buf, a)
+
+						case <-time.After(duration):
+							if len(buf) == 0 {
+								continue
+							}
+
+							if !SendItem(ctx, ch, ItemOf(buf)) {
 								ch <- ItemError[[]A](ctx.Err())
 								return
 							}
+
+							buf = []A{}
 						}
-
-						buf = append(buf, a)
-
-					case <-time.After(duration):
-						if len(buf) == 0 {
-							continue
-						}
-
-						if !SendItem(ctx, ch, ItemOf(buf)) {
-							ch <- ItemError[[]A](ctx.Err())
-							return
-						}
-
-						buf = []A{}
 					}
-				}
 
-			}()
+				}()
 
-			return func() <-chan Item[[]A] {
 				return ch
 			}
 		}

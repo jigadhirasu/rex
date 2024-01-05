@@ -7,38 +7,37 @@ func MapTo[A, B any](b B) PipeLine[A, B] {
 func _to[A, B any](b B) PipeLine[A, B] {
 	return func(iterable Iterable[A]) Reader[B] {
 		return func(ctx Context) Iterable[B] {
+			return func() <-chan Item[B] {
+				ch := make(chan Item[B])
 
-			ch := make(chan Item[B])
+				go func() {
+					defer close(ch)
+					defer Catcher[B](ch)
 
-			go func() {
-				defer close(ch)
-				defer Catcher[B](ch)
+					source := iterable()
 
-				source := iterable()
-
-				for {
-					item, ok := <-source
-					if !ok {
-						return
-					}
-
-					_, err := item()
-					if err != nil {
-						if !SendItem(ctx, ch, ItemError[B](err)) {
-							ch <- ItemError[B](ctx.Err())
+					for {
+						item, ok := <-source
+						if !ok {
+							return
 						}
 
-						return
-					}
+						_, err := item()
+						if err != nil {
+							if !SendItem(ctx, ch, ItemError[B](err)) {
+								ch <- ItemError[B](ctx.Err())
+							}
 
-					if !SendItem(ctx, ch, ItemOf(b)) {
-						ch <- ItemError[B](ctx.Err())
-						return
-					}
-				}
-			}()
+							return
+						}
 
-			return func() <-chan Item[B] {
+						if !SendItem(ctx, ch, ItemOf(b)) {
+							ch <- ItemError[B](ctx.Err())
+							return
+						}
+					}
+				}()
+
 				return ch
 			}
 		}
