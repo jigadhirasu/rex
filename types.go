@@ -6,6 +6,14 @@ type Transfer2[A, B, C any] func(a A, b B) C
 type Func0[A any] func(ctx Context, a A) error
 type Func1[A, B any] func(ctx Context, a A) (B, error)
 type Func2[A, B, C any] func(ctx Context, a A, b B) (C, error)
+type Func3[A, B, C, D any] func(ctx Context, a A, b B, c C) (D, error)
+type Func4[A, B, C, D, E any] func(ctx Context, a A, b B, c C, d D) (E, error)
+type Func5[A, B, C, D, E, F any] func(ctx Context, a A, b B, c C, d D, e E) (F, error)
+type Func6[A, B, C, D, E, F, G any] func(ctx Context, a A, b B, c C, d D, e E, f F) (G, error)
+type Func7[A, B, C, D, E, F, G, H any] func(ctx Context, a A, b B, c C, d D, e E, f F, g G) (H, error)
+type Func8[A, B, C, D, E, F, G, H, I any] func(ctx Context, a A, b B, c C, d D, e E, f F, g G, h H) (I, error)
+type Func9[A, B, C, D, E, F, G, H, I, J any] func(ctx Context, a A, b B, c C, d D, e E, f F, g G, h H, i I) (J, error)
+type Func10[A, B, C, D, E, F, G, H, I, J, K any] func(ctx Context, a A, b B, c C, d D, e E, f F, g G, h H, i I, j J) (K, error)
 
 type HFunc1[A, B any] func(ctx Context, a A) Iterable[B]
 type HFunc2[A, B, C any] func(ctx Context, a A, b B) Iterable[C]

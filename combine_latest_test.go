@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAAAA(t *testing.T) {
+func TestCombineLatest2(t *testing.T) {
 
 	ctx := NewContext(context.Background())
 
-	cb_ := _combineLatest1(
+	cb_ := _combineLatest(
 		func(ctx Context, a, b int) (int, error) {
 			return a + b, nil
 		},

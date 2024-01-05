@@ -1,6 +1,10 @@
 package rex
 
-func _combineLatest1[A, B, C any](f Func2[A, B, C], opts ...applyOption) func(Iterable[A], Iterable[B]) Reader[C] {
+func CombineLatest[A, B, C any](f Func2[A, B, C], opts ...applyOption) func(iterableA Iterable[A], iterableB Iterable[B]) Reader[C] {
+	return _combineLatest[A, B, C](f, opts...)
+}
+
+func _combineLatest[A, B, C any](f Func2[A, B, C], opts ...applyOption) func(Iterable[A], Iterable[B]) Reader[C] {
 	return func(iterableA Iterable[A], iterableB Iterable[B]) Reader[C] {
 		return func(ctx Context) Iterable[C] {
 			return func() <-chan Item[C] {
@@ -13,11 +17,25 @@ func _combineLatest1[A, B, C any](f Func2[A, B, C], opts ...applyOption) func(It
 					sourceA := iterableA()
 					sourceB := iterableB()
 
-					var Va A
-					var Vb B
-
 					// ------所有來源都至少有一個才會開始------
-					next := func(ctx Context, a A, b B) {
+					next := func(ctx Context, itemA Item[A], itemB Item[B]) {
+						a, err := itemA()
+						if err != nil {
+							if !SendItem(ctx, ch, ItemError[C](err)) {
+								ch <- ItemError[C](ctx.Err())
+							}
+
+							return
+						}
+
+						b, err := itemB()
+						if err != nil {
+							if !SendItem(ctx, ch, ItemError[C](err)) {
+								ch <- ItemError[C](ctx.Err())
+							}
+
+							return
+						}
 
 						c, err := f(ctx, a, b)
 
@@ -34,66 +52,37 @@ func _combineLatest1[A, B, C any](f Func2[A, B, C], opts ...applyOption) func(It
 						}
 					}
 
+					var lastA Item[A]
+					var lastB Item[B]
+
 					itemA, okA := <-sourceA
 					if okA {
-						a, err := itemA()
-						if err != nil {
-							if !SendItem(ctx, ch, ItemError[C](err)) {
-								ch <- ItemError[C](ctx.Err())
-							}
-
-							return
-						}
-						Va = a
+						lastA = itemA
 					}
 
 					itemB, okB := <-sourceB
 					if okB {
-						b, err := itemB()
-						if err != nil {
-							if !SendItem(ctx, ch, ItemError[C](err)) {
-								ch <- ItemError[C](ctx.Err())
-							}
-
-							return
-						}
-						Vb = b
+						lastB = itemB
 					}
 
 					if !okA || !okB {
 						return
 					}
 
-					next(ctx, Va, Vb)
+					next(ctx, lastA, lastB)
 					// ------所有來源都至少有一個才會開始------
 
 					for {
 						select {
 						case itemA, okA = <-sourceA:
 							if okA {
-								a, err := itemA()
-								if err != nil {
-									if !SendItem(ctx, ch, ItemError[C](err)) {
-										ch <- ItemError[C](ctx.Err())
-									}
-
-									return
-								}
-								Va = a
-								next(ctx, Va, Vb)
+								lastA = itemA
+								next(ctx, lastA, lastB)
 							}
 						case itemB, okB = <-sourceB:
 							if okB {
-								b, err := itemB()
-								if err != nil {
-									if !SendItem(ctx, ch, ItemError[C](err)) {
-										ch <- ItemError[C](ctx.Err())
-									}
-
-									return
-								}
-								Vb = b
-								next(ctx, Va, Vb)
+								lastB = itemB
+								next(ctx, lastA, lastB)
 							}
 						}
 
@@ -105,7 +94,6 @@ func _combineLatest1[A, B, C any](f Func2[A, B, C], opts ...applyOption) func(It
 
 				return ch
 			}
-
 		}
 	}
 }
