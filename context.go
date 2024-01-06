@@ -30,6 +30,7 @@ type Context interface {
 	Unlock()
 	RLock()
 	RUnlock()
+	Err() error
 
 	Original() context.Context
 	WithContext(context.Context)
@@ -47,6 +48,14 @@ type ContextImpl struct {
 // 去得 context.Context
 func (ctx *ContextImpl) Original() context.Context {
 	return ctx.Context
+}
+
+func (ctx *ContextImpl) Err() error {
+	if err, ok := Maybe[error](ctx, ctxErrorKey); ok {
+		return err
+	}
+
+	return ctx.Context.Err()
 }
 
 // 用原生的 context.Context 傳遞值
