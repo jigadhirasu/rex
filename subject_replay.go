@@ -48,7 +48,6 @@ func NewSubjectReplay[A any](replayCount int) Subject[A] {
 
 	subscribeFunc := func() <-chan Item[A] {
 		source := make(chan Item[A])
-		subscribes = append(subscribes, source)
 
 		ch := make(chan Item[A])
 
@@ -64,6 +63,8 @@ func NewSubjectReplay[A any](replayCount int) Subject[A] {
 			if closed {
 				return
 			}
+
+			subscribes = append(subscribes, source)
 
 			for item := range source {
 				ch <- item

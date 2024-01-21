@@ -32,12 +32,7 @@ func TestReduce1(t *testing.T) {
 func TestReduce2(t *testing.T) {
 
 	pipe := Pipe1(
-		Reduce[int, []int](func(a []int, b int) []int {
-			if a == nil {
-				a = []int{}
-			}
-			return append(a, b)
-		}),
+		ReduceSlice[int](),
 	)(
 		Range(1, 5),
 	)(
@@ -49,20 +44,15 @@ func TestReduce2(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t,
-		result,
 		[][]int{{1, 2, 3, 4, 5}},
+		result,
 	)
 }
 
 func TestReduce3(t *testing.T) {
 
 	pipe := Pipe1(
-		Reduce[int, []int](func(a []int, b int) []int {
-			if a == nil {
-				a = []int{}
-			}
-			return append(a, b)
-		}),
+		ReduceSlice[int](),
 	)(
 		From[int](),
 	)(
@@ -79,18 +69,23 @@ func TestReduce3(t *testing.T) {
 	)
 }
 
-func TestReduce4(t *testing.T) {
+func TestReduceMap(t *testing.T) {
+
+	type Data struct {
+		A int
+		B string
+	}
 
 	pipe := Pipe1(
-		Reduce[int, map[int]string](func(a map[int]string, b int) map[int]string {
-			if a == nil {
-				a = map[int]string{}
-			}
-			a[b] = "a"
-			return a
+		ReduceMap[Data, int](func(a Data) int {
+			return a.A
 		}),
 	)(
-		Range(1, 3),
+		From(
+			Data{A: 1, B: "a"},
+			Data{A: 2, B: "b"},
+			Data{A: 1, B: "d"},
+		),
 	)(
 		NewContext(context.TODO()),
 	)
@@ -100,13 +95,12 @@ func TestReduce4(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t,
-		result,
-		[]map[int]string{
+		[]map[int]Data{
 			{
-				1: "a",
-				2: "a",
-				3: "a",
+				1: {A: 1, B: "d"},
+				2: {A: 2, B: "b"},
 			},
 		},
+		result,
 	)
 }
