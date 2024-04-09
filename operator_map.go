@@ -2,7 +2,7 @@ package rex
 
 import "sync"
 
-// 有Side Effect的Step
+// Map 有Side Effect的Step
 func Map[A, B any](f Func1[A, B], opts ...applyOption) PipeLine[A, B] {
 	return _map(f, opts...)
 }

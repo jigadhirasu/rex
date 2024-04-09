@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// NewContext 產生一個新的 context
 func NewContext(original context.Context) Context {
 
 	ctx := &ContextImpl{
@@ -23,6 +24,7 @@ func NewContext(original context.Context) Context {
 	return ctx
 }
 
+// Context 封裝了 context.Context，並且提供了一些額外的功能
 type Context interface {
 	context.Context
 

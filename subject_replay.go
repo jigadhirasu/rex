@@ -4,6 +4,7 @@ import (
 	"sync"
 )
 
+// NewSubjectReplay 用來建立一個帶有回放功能的 Subject
 func NewSubjectReplay[A any](replayCount int) Subject[A] {
 	next := make(chan Item[A])
 

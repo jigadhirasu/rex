@@ -1,5 +1,6 @@
 package rex
 
+// ConcatMap 會依序將每個元素經過 f 轉換後再串接起來
 func ConcatMap[A, B any](f HFunc1[A, B]) PipeLine[A, B] {
 	return func(iterable Iterable[A]) Reader[B] {
 		return func(ctx Context) Iterable[B] {
@@ -15,12 +16,14 @@ func ConcatMap[A, B any](f HFunc1[A, B]) PipeLine[A, B] {
 	}
 }
 
+// ConcatALL 會依序將每個 Iterable 串接起來
 func ConcatALL[A any](opts ...applyOption) PipeLine[Iterable[A], A] {
 	return func(iterable Iterable[Iterable[A]]) Reader[A] {
 		return _concat(iterable)
 	}
 }
 
+// Concat 會依序將多個 Iterable 串接起來
 func Concat[A any](iterables ...Iterable[A]) Reader[A] {
 	return _concat(From(iterables...))
 }

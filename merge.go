@@ -4,6 +4,7 @@ import (
 	"sync"
 )
 
+// MergeMap 用來將一個 Iterable[A] 轉換成 Iterable[B]，不保證順序
 func MergeMap[A, B any](f HFunc1[A, B]) PipeLine[A, B] {
 	return func(iterable Iterable[A]) Reader[B] {
 		return func(ctx Context) Iterable[B] {
@@ -19,12 +20,14 @@ func MergeMap[A, B any](f HFunc1[A, B]) PipeLine[A, B] {
 	}
 }
 
+// MergeALL 會將所有的 Iterable 串接起來，不保證順序
 func MergeALL[A any](opts ...applyOption) PipeLine[Iterable[A], A] {
 	return func(iterable Iterable[Iterable[A]]) Reader[A] {
 		return _merge(iterable)
 	}
 }
 
+// Merge 會將所有的 Iterable 串接起來，不保證順序
 func Merge[A any](iterables ...Iterable[A]) Reader[A] {
 	return _merge(From(iterables...))
 }

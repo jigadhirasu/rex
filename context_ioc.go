@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// 取得值，若不存在則 panic
+// Get 取得值，若不存在則 panic
 func Get[A any](ctx Context, key string) A {
 	ctx.RLock()
 	defer ctx.RUnlock()
@@ -19,7 +19,7 @@ func Get[A any](ctx Context, key string) A {
 	return v
 }
 
-// 取得值，若不存在則回傳預設值
+// Maybe 取得值，若不存在則回傳預設值
 func Maybe[A any](ctx Context, key string) (A, bool) {
 	ctx.RLock()
 	defer ctx.RUnlock()
@@ -29,7 +29,7 @@ func Maybe[A any](ctx Context, key string) (A, bool) {
 	return v, ok
 }
 
-// 設定錯誤
+// SetError 設定錯誤
 func SetError(ctx Context, err error) {
 	Set(ctx, ctxErrorKey, err)
 	cancel, ok := Maybe[context.CancelFunc](ctx, ctxCancelKey)
@@ -38,7 +38,7 @@ func SetError(ctx Context, err error) {
 	}
 }
 
-// 設定
+// Set 設定
 func Set(ctx Context, key string, value any) {
 	ctx.Lock()
 	if ctx.Value(key) != nil {
@@ -49,7 +49,7 @@ func Set(ctx Context, key string, value any) {
 	ctx.Unlock()
 }
 
-// 複寫
+// Overwrite 複寫
 func Overwrite(ctx Context, key string, value any) {
 	ctx.Lock()
 	if ctx.Value(key) != nil {
@@ -59,7 +59,7 @@ func Overwrite(ctx Context, key string, value any) {
 	ctx.Unlock()
 }
 
-// 刪除
+// Delete 刪除
 func Delete(ctx Context, key string) {
 	ctx.Lock()
 	defer ctx.Unlock()
@@ -70,6 +70,7 @@ func Delete(ctx Context, key string) {
 	fmt.Println("key:", key, " not exists")
 }
 
+// String2Any 將 string 轉成 any
 func String2Any(value string) any {
 	return value
 }

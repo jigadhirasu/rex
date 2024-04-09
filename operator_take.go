@@ -1,6 +1,6 @@
 package rex
 
-// 取得前 n 個元素
+// Take 取得前 n 個元素
 func Take[A any](n int) PipeLine[A, A] {
 	return _take[A](n)
 }

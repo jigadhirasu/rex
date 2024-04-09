@@ -1,5 +1,6 @@
 package rex
 
+// Zip 用來將兩個 Iterable 合併成一個，並透過指定的函數對應元素
 func Zip[A, B, C any](f Func2[A, B, C], opts ...applyOption) func(iterableA Iterable[A], iterableB Iterable[B]) Reader[C] {
 	return _zip(f, opts...)
 }

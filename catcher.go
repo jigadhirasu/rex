@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// Catcher 用來捕捉 panic
 // 只有在 PROJECT_MODE=main 時才會捕捉 panic
 func Catcher[A any](ch chan<- Item[A]) {
 

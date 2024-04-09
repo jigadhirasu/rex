@@ -1,5 +1,6 @@
 package rex
 
+// Subject 是一個可以被訂閱的資料來源
 func NewSubject[A any]() Subject[A] {
 	next := make(chan Item[A])
 

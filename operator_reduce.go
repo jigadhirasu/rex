@@ -1,9 +1,11 @@
 package rex
 
+// Reduce 用來將元素進行累加
 func Reduce[A, B any](f Transfer2[B, A, B]) PipeLine[A, B] {
 	return _reduce(f)
 }
 
+// ReduceSlice 用來將元素進行累加，並回傳一個 slice
 func ReduceSlice[A any]() PipeLine[A, []A] {
 	return _reduce[A, []A](func(b []A, a A) []A {
 		if b == nil {
@@ -14,6 +16,7 @@ func ReduceSlice[A any]() PipeLine[A, []A] {
 	})
 }
 
+// ReduceMap 用來將元素進行累加，並回傳一個 map
 func ReduceMap[A any, B comparable](f Transfer1[A, B]) PipeLine[A, map[B]A] {
 	return _reduce[A, map[B]A](func(b map[B]A, a A) map[B]A {
 		if b == nil {

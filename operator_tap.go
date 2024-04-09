@@ -1,5 +1,6 @@
 package rex
 
+// Tap 用來在每個元素上執行指定的函數，並將元素原封不動地傳遞到下一個操作
 func Tap[A any](f Func0[A]) PipeLine[A, A] {
 	return _tap(f)
 }

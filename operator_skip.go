@@ -1,6 +1,6 @@
 package rex
 
-// 取得前 n 個元素
+// Skip 取得前 n 個元素
 func Skip[A any](n int) PipeLine[A, A] {
 	return _skip[A](n)
 }

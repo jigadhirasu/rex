@@ -1,5 +1,6 @@
 package rex
 
+// Once 用來執行一次指定的函數
 func Once[A any](f Func0[A]) PipeLine[A, A] {
 	return _once(f)
 }

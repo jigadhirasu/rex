@@ -1,5 +1,6 @@
 package rex
 
+// MapTo 用來將所有元素轉換成指定的值
 func MapTo[A, B any](b B) PipeLine[A, B] {
 	return _to[A, B](b)
 }

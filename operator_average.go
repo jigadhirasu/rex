@@ -1,11 +1,13 @@
 package rex
 
+// Number 定義數字型態
 type Number interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 |
 		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 |
 		~float32 | ~float64
 }
 
+// Average 用來計算平均值
 func Average[A Number](iterable Iterable[A]) Reader[A] {
 	return func(ctx Context) Iterable[A] {
 		return func() <-chan Item[A] {

@@ -1,5 +1,6 @@
 package rex
 
+// BufferCount 用數量來將 Iterable 分組後在輸出, EX count = 2, [A,B,C,D,E] => [[A,B],[C,D],[E]]
 func BufferCount[A any](count int, opts ...applyOption) PipeLine[A, []A] {
 	return func(iterable Iterable[A]) Reader[[]A] {
 		return func(ctx Context) Iterable[[]A] {

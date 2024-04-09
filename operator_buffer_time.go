@@ -2,6 +2,7 @@ package rex
 
 import "time"
 
+// BufferTime 用時間來將 Iterable 分組後在輸出, EX duration = 2ms, [A,B,C,D,E] => [[A],[B,C,D],[E]]
 func BufferTime[A any](duration time.Duration, opts ...applyOption) PipeLine[A, []A] {
 	return func(iterable Iterable[A]) Reader[[]A] {
 		return func(ctx Context) Iterable[[]A] {

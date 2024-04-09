@@ -1,5 +1,6 @@
 package rex
 
+// CombineLatest 會將兩個來源的元素進行組合，並且在任一來源有新元素時，就會進行組合
 func CombineLatest[A, B, C any](f Func2[A, B, C], opts ...applyOption) func(iterableA Iterable[A], iterableB Iterable[B]) Reader[C] {
 	return _combineLatest[A, B, C](f, opts...)
 }

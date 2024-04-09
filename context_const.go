@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// 產生一個新的 key
+// GenKey 用來產生一個新的 key
 func GenKey(prefixKey ...string) string {
 	var prefix string
 	if len(prefixKey) > 0 {

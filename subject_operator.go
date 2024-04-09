@@ -1,5 +1,6 @@
 package rex
 
+// Next 用來將新的資料送入 Subject
 func Next[A any](subject Subject[A]) func(a ...A) {
 	next, _ := subject()
 
@@ -10,6 +11,7 @@ func Next[A any](subject Subject[A]) func(a ...A) {
 	}
 }
 
+// NextItem 用來將新的 Item 資料送入 Subject
 func NextItem[A any](subject Subject[A]) func(item ...Item[A]) {
 	next, _ := subject()
 
@@ -20,6 +22,7 @@ func NextItem[A any](subject Subject[A]) func(item ...Item[A]) {
 	}
 }
 
+// NextChan 用來將新的 Channel 資料送入 Subject
 func NextChan[A any](subject Subject[A]) func(ch <-chan A) {
 	next, _ := subject()
 
@@ -30,6 +33,7 @@ func NextChan[A any](subject Subject[A]) func(ch <-chan A) {
 	}
 }
 
+// NextChanItem 用來將新的 Channel Item 資料送入 Subject
 func NextChanItem[A any](subject Subject[A]) func(ch <-chan Item[A]) {
 	next, _ := subject()
 
@@ -40,6 +44,7 @@ func NextChanItem[A any](subject Subject[A]) func(ch <-chan Item[A]) {
 	}
 }
 
+// Subscribe 用來訂閱 Subject
 func Subscribe[A any](subject Subject[A]) Iterable[A] {
 	_, iterable := subject()
 
